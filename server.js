@@ -4,9 +4,9 @@ const path = require("path");
 const app = express();
 
 // serve the react app
-const publicPath = path.join(__dirname, 'build');
+const buildPath = path.join(__dirname, 'build');
 
-app.use(express.static(publicPath));
+app.use(express.static(buildPath));
 
 app.get('/*', (req, res) => {
   res.sendFile(path.join(publicPath, 'index.html'));
@@ -17,6 +17,7 @@ app.get('/*', (req, res) => {
 const server = app.listen(process.env.PORT || 3000, () => {
   console.log("server started");
 });
+
 io.listen(server);
 
 // all of the editors currently open
