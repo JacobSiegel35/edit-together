@@ -6,7 +6,7 @@ import { withRouter } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { Section, Box, Tile } from "react-bulma-components";
 
-const socket = io.connect("http://localhost:3000");
+const socket = io.connect("/");
 
 const Main = props => {
 
