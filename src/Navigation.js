@@ -57,6 +57,9 @@ const Navigation = props => {
                 onChange={(e) => setSocketName(e.target.value)}
               /> 
             </Navbar.Item>
+            <Navbar.Item>
+              <Button onClick={props.runCode}>Run Code</Button>
+            </Navbar.Item>  
           </Navbar.Container>
           <Navbar.Container position="end">
             <Navbar.Item>

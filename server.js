@@ -2,14 +2,46 @@ const express = require('express');
 const io = require("socket.io")();
 const path = require("path");
 const app = express();
+const bodyParser = require('body-parser');
+const jsonParser = bodyParser.json();
+const fs = require('fs');
+const { exec } = require('child_process');
+const { FILE } = require('dns');
 
 // serve the react app
 const buildPath = path.join(__dirname, 'build');
 
 app.use(express.static(buildPath));
 
-app.get('/*', (req, res) => {
+app.get('/', (req, res) => {
   res.sendFile(path.join(buildPath, 'index.html'));
+});
+
+app.post('/runcode', jsonParser, (req, res) => {
+  const code = req.body.code;
+  const FILE_NAME = "code" + req.body.roomID + ".py";
+
+  let status = 200;
+
+  fs.writeFile(FILE_NAME, code, { flag: 'w' }, e => {
+    if (e) {
+      status = 500;
+    }
+
+    exec('python ' + FILE_NAME, (err, stdout, stderr) => {
+      if (err) {
+        status = 500;
+      }
+
+      fs.unlink(FILE_NAME, unlinkErr => {
+        if (unlinkErr) {
+          status = 500;
+        }
+
+        res.send(JSON.stringify({ status, stdout, stderr }));
+      });
+    });
+  });
 });
 
 // start servers

@@ -71,6 +71,12 @@ const Main = props => {
     socket.emit("change-editor-text", text);
   }
 
+  const runCode = _ => {
+    fetch('/runcode', {method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: editorValue, roomID })})
+      .then(res => res.json())
+      .then(data => console.log(data));
+  }
+
   const disconnect = () => {
     // leave the socket from the room
     socket.emit("leave-room");
@@ -161,6 +167,7 @@ const Main = props => {
           languageChange={languageChange}
           isConnected={isConnected}
           nameChanged={nameChanged}
+          runCode={runCode}
         />
 
       </Box>
