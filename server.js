@@ -4,9 +4,31 @@ const path = require("path");
 const app = express();
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
-const fs = require('fs');
-const { exec } = require('child_process');
-const { FILE } = require('dns');
+const axios = require('axios').default;
+
+const EXEC_SERVER_1_LOCALHOST = "http://localhost:3001/runcode";
+const EXEC_SERVER_2_LOCALHOST = "http://localhost:3002/runcode";
+const EXEC_SERVER_1_AZURE = "http://localhost:3001/runcode";
+const EXEC_SERVER_2_AZURE = "http://localhost:3002/runcode";
+
+const EXEC_SERVER_1 = EXEC_SERVER_1_LOCALHOST;
+const EXEC_SERVER_2 = EXEC_SERVER_2_LOCALHOST;
+
+
+class ExecServer {
+  constructor(url) {
+    this.url = url;
+    this.next = null;
+  }
+}
+
+// setup circular linked list for round robin scheduling.
+let node1 = new ExecServer(EXEC_SERVER_1);
+let node2 = new ExecServer(EXEC_SERVER_2);
+node1.next = node2;
+node2.next = node1;
+
+let curNode = node1;
 
 // serve the react app
 const buildPath = path.join(__dirname, 'build');
@@ -21,31 +43,19 @@ app.post('/runcode', jsonParser, (req, res) => {
   const code = req.body.code;
   const FILE_NAME = "code" + req.body.roomID + ".py";
 
-  let status = 200;
-
-  fs.writeFile(FILE_NAME, code, { flag: 'w' }, e => {
-    if (e) {
-      status = 500;
-    }
-
-    exec('python ' + FILE_NAME, (err, stdout, stderr) => {
-      if (err) {
-        status = 500;
-      }
-
-      fs.unlink(FILE_NAME, unlinkErr => {
-        if (unlinkErr) {
-          status = 500;
-        }
-
-        res.send(JSON.stringify({ status, stdout, stderr }));
-      });
+  axios.post(curNode.url, { 'code': code, 'fileName': FILE_NAME })
+    .then(response => {
+      console.log(response.data);
+      res.json({data: response.data});
+    })
+    .catch(e => {
+      console.log(e)
     });
-  });
+  
+  curNode = curNode.next;
 });
 
 // start servers
-
 const server = app.listen(process.env.PORT || 3000, () => {
   console.log("server started");
 });

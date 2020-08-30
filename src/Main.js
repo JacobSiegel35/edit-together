@@ -24,7 +24,8 @@ const Main = props => {
   const [editorValue, setEditorValue] = useState("");
   const [language, setLanguage] = useState("python");
   const [isConnected, setIsConnected] = useState(false);
-
+  const [codeOutput, setCodeOutput] = useState("");
+  
   useEffect(() => {
     const loc = props.history.location.pathname.substring(1);
     if (loc) {
@@ -72,9 +73,11 @@ const Main = props => {
   }
 
   const runCode = _ => {
-    fetch('/runcode', {method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: editorValue, roomID })})
+    fetch('/runcode', {method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: editorValue, roomID: roomID })})
       .then(res => res.json())
-      .then(data => console.log(data));
+      .then(data => {
+        setCodeOutput(data.data.output);
+      });
   }
 
   const disconnect = () => {
@@ -128,7 +131,6 @@ const Main = props => {
           <Tile size={5} vertical>
             <Tile>
               <Tile kind="parent" vertical>
-
                 <Editor 
                   socket={socket}
                   roomID={roomID}
@@ -152,8 +154,8 @@ const Main = props => {
                   clients={clients}
                   socketID={socket.id}
                   isConnected={isConnected}
+                  codeOutput={codeOutput}
                 />
-
               </Tile>
             </Tile>
           </Tile>

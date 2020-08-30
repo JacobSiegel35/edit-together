@@ -35,6 +35,12 @@ export default props => {
           </Notification>
       }
 
+      <Notification>
+        Output:
+        {<br />}
+        {props.codeOutput}
+      </Notification>
+
       {
         props.err ? 
           <Notification color="danger">
