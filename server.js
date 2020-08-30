@@ -8,12 +8,11 @@ const axios = require('axios').default;
 
 const EXEC_SERVER_1_LOCALHOST = "http://localhost:3001/runcode";
 const EXEC_SERVER_2_LOCALHOST = "http://localhost:3002/runcode";
-const EXEC_SERVER_1_AZURE = "http://localhost:3001/runcode";
-const EXEC_SERVER_2_AZURE = "http://localhost:3002/runcode";
+const EXEC_SERVER_1_AZURE = "http://execserver1.southcentralus.cloudapp.azure.com:1337/runcode";
+const EXEC_SERVER_2_AZURE = "http://execserver2.southcentralus.cloudapp.azure.com:1337/runcode";
 
-const EXEC_SERVER_1 = EXEC_SERVER_1_LOCALHOST;
-const EXEC_SERVER_2 = EXEC_SERVER_2_LOCALHOST;
-
+const EXEC_SERVER_1 = EXEC_SERVER_1_AZURE;
+const EXEC_SERVER_2 = EXEC_SERVER_2_AZURE;
 
 class ExecServer {
   constructor(url) {
@@ -56,7 +55,7 @@ app.post('/runcode', jsonParser, (req, res) => {
 });
 
 // start servers
-const server = app.listen(process.env.PORT || 3000, () => {
+const server = app.listen(1337, () => {
   console.log("server started");
 });
 
